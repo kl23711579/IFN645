@@ -1,5 +1,7 @@
 package Text;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -73,19 +75,29 @@ public class Text {
         tokenizers.add(new NGramTokenizer());
         tokenizers.add(new WordTokenizer());
 
-        for(int i = 0; i < stemmers.size(); i++){
-            swFilter.setStemmer(stemmers.get(i));
-            for(int j = 0; j < sh.size(); j++) {
-                swFilter.setStopwordsHandler(sh.get(j));
-                for(int k = 0; k < tokenizers.size(); k++) {
-                    swFilter.setTokenizer(tokenizers.get(k));
-                    FilteredClassifier fc = new FilteredClassifier();
-                    fc.setFilter(swFilter);
-                    fc.setClassifier(new NaiveBayes());
-                    tt.doClassification(fc, t_data, new Evaluation(t_data));
+        try {
+            FileWriter myfile = new FileWriter("result.txt");
+            for(int i = 0; i < stemmers.size(); i++){
+                swFilter.setStemmer(stemmers.get(i));
+                for(int j = 0; j < sh.size(); j++) {
+                    swFilter.setStopwordsHandler(sh.get(j));
+                    for(int k = 0; k < tokenizers.size(); k++) {
+                        swFilter.setTokenizer(tokenizers.get(k));
+                        FilteredClassifier fc = new FilteredClassifier();
+                        fc.setFilter(swFilter);
+                        fc.setClassifier(new NaiveBayes());
+                        double r = tt.doClassification(fc, t_data, new Evaluation(t_data));
+                        String wr = String.valueOf(r) + "\n";
+                        myfile.write(wr);
+                    }
                 }
             }
+            myfile.close();
+        } catch(IOException e) {
+            System.out.println("Something Errorr");
+            e.printStackTrace();
         }
+        
 
 
         // create filter for text.arff
@@ -105,10 +117,11 @@ public class Text {
         // tt.doClassification(fc, t_data, new Evaluation(t_data));
     }
 
-    public void doClassification(AbstractClassifier classifier, Instances data, Evaluation eval) throws Exception{
+    public double doClassification(AbstractClassifier classifier, Instances data, Evaluation eval) throws Exception{
         classifier.buildClassifier(data);
         eval.crossValidateModel(classifier, data, 10, new Random(1));
         System.out.println(eval.correct());
+        return eval.correct();
     }
     
 }
