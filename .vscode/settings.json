@@ -1,0 +1,7 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/Users/d1w1rnna/Documents/work/weka-3-8-4/weka.jar",
+        "/Users/d1w1rnna/Documents/work/IFN645/5/moa.jar"
+    ]
+}
